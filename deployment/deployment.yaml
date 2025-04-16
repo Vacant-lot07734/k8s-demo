@@ -1,15 +1,15 @@
-apiVersion: apps/v1  
-kind: Deployment  
+apiVersion: apps/v1  # 使用的 Kubernetes API 版本，apps/v1 是目前部署控制器的主流版本。
+kind: Deployment     # 资源类型，这里是 Deployment，表示会自动管理 Pod 副本（replica）和滚动更新
 metadata:  
   labels:  
-    app: k8s-combat  
+    app: k8s-combat  # 给资源打标签，用于查找和匹配（非常关键，后面 selector 要用到）
   name: k8s-combat  
 spec:  
-  replicas: 1  
+  replicas: 1       # 指定要运行几个副本（Pod 实例），这里是 1。
   selector:  
     matchLabels:  
       app: k8s-combat  
-  template:  
+  template:         # 生成 Pod 的模板，Deployment 会根据它去启动 Pod：
     metadata:  
       labels:  
         app: k8s-combat  
@@ -18,7 +18,7 @@ spec:
         - name: k8s-combat  
           image: k8s-combat:v1  
           # imagePullPolicy: Always  
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: IfNotPresent #  镜像拉取策略，Always 表示每次都拉取最新的镜像，IfNotPresent 表示如果本地有就不拉取
           resources:  
             limits:  
               cpu: "1"  
