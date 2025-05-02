@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress   # Ingress 资源类型
+metadata:
+  name: k8s-combat-ingress
+spec:                     # 指定使用的 Ingress 控制器，这里是 nginx,
+  ingressClassName: nginx # 因为部署了nginx-ingress-controller(是一个pod，监听ingress规则，代理到后端service)
+  rules:                  # 定义域名路由规则
+    - host: www.service1.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: k8s-combat-service
+                port:
+                  number: 8081
+            path: /
+            pathType: Prefix # 路由规则，Prefix 表示前缀匹配
+    - host: www.service2.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: k8s-combat-service-2
+                port:
+                  number: 8081
+            path: /
+            pathType: Prefix

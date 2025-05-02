@@ -35,6 +35,6 @@ spec:
     app: k8s-combat-service # 通过标签选择关联  
   type: ClusterIP  # 服务类型，ClusterIP 表示只在集群内部可访问，NodePort 表示可以通过节点 IP 和端口访问，LoadBalancer 表示云服务商提供的负载均衡器
   ports:  
-    - port: 8081        # 本 Service 的端口  
+    - port: 8081        # 本 Service 的端口  , 如果和容器端口相同，可以省略
       targetPort: 8081  # 容器端口  
       name: app
