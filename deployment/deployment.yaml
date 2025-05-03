@@ -16,9 +16,22 @@ spec:
     spec:  
       containers:  
         - name: k8s-combat  
-          image: k8s-combat:v1  
+          image: haruhi07734/k8s-combat:configmap
           # imagePullPolicy: Always  
           imagePullPolicy: IfNotPresent #  镜像拉取策略，Always 表示每次都拉取最新的镜像，IfNotPresent 表示如果本地有就不拉取
+          volumeMounts: #挂载下面 APP存放的yaml格式数据
+            - name: app
+              mountPath: "/go/bin/app.yaml"
+              subPath: APP
+          envFrom: # 绑定configmap的kvdata到环境变量
+            - configMapRef:
+                name: k8s-combat-configmap
+          env:  
+            - name: PG_PWD  
+              valueFrom:  
+                secretKeyRef:  
+                  name: k8s-combat-secret  
+                  key: PWD
           resources:  
             limits:  
               cpu: "1"  
@@ -26,3 +39,31 @@ spec:
             requests:  
               cpu: "0.1"  
               memory: 30Mi
+      volumes:
+        - name: app #挂载下面 APP存放的yaml格式数据
+          configMap:
+            name: k8s-combat-configmap
+        
+---
+apiVersion: v1
+kind: ConfigMap # 将配置信息存储到k8s中, 明文存储
+metadata:
+  name: k8s-combat-configmap
+data:           # 将配置直接写入环境变量 （data部分存储KV数据，大小不超过1MB）
+  PG_URL: "<存储一个数据库链接>postgres://postgres:postgres@localhost:5432/postgressslmode=disable"
+  APP:  |
+    name: k8s-combat
+    pulsar:
+      url: "pulsar://localhost:6650"
+      token: "abc"
+
+---
+apiVersion: v1  
+kind: Secret  
+metadata:  
+  name: k8s-combat-secret  
+type: Opaque  
+data:  
+  PWD: aGFydWhpCg==
+
+---
